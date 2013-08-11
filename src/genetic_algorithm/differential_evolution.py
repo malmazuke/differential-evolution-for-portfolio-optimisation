@@ -5,12 +5,10 @@ Created on Aug 11, 2013
 @contact: mark.feaver@gmail.com
 @summary: A Python implementation of Differential Evolution, using the DE/rand/1/bin scheme
 '''
-# class Vector:
-#     attr = []
-#     def __init__(self, ):
-
+population = []
 
 def init_population():
+    global population
     """ Intialise the population"""
     print "Initialising Population..."
 
