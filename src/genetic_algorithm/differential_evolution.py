@@ -161,6 +161,8 @@ class DifferentialEvolver:
         return out_vector
     
     def print_results(self):
+        print "For d:" + str(self._num_dimensions) + ", pop_size: " + str(self._pop_size) + ", max_gens:" + str(self._max_gens) + ", scale_factor: " + str(self._scale_factor) + \
+        ", crossover_rate: " + str(self._cr_rate)
         for x in xrange(self._pop_size):
             print "fitness: " + str(self._scores[x]) + " sum: " + str(sum(self._population[x])) + " values: " + str(self._population[x])
         
@@ -191,5 +193,5 @@ class DifferentialEvolver:
         self._scores = []
         
 if __name__ == '__main__':
-    evolver = DifferentialEvolver(5, num_diff_vectors=1, obj_function=one_max, max_gens=50, scaling_factor=0.4)
+    evolver = DifferentialEvolver(5, num_diff_vectors=1, obj_function=one_max, max_gens=500, scaling_factor=0.4)
     evolver.start()

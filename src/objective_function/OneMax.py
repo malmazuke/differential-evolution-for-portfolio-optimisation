@@ -5,12 +5,11 @@ Created on Aug 14, 2013
 '''
 
 def one_max(vector):
-    """ Calculate the fitness of a vector, based on how close the values average to 1. If the value is greater than 1, return 0 """
+    """ Calculate the fitness of a vector, based on how close the values average to 1. """
 
     total = sum(vector)
-    total = pow(total, 2)
     
-    diff = abs(total - 10)
+    diff = abs(total - 1)
     return diff
 
 #     total = 0
