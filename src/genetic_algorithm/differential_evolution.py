@@ -18,6 +18,32 @@ DEF_NUM_DIFF_VECTORS=1
 DEF_CR_SCHEME="bin"
 DEF_OBJ_FUNCT=schwefel_function
 
+
+def add_vectors(vector1, vector2):
+    """ Utility function to add two vectors. Assumes that vectors are same length"""
+    out_vector = []
+    for x in xrange(len(vector1)):
+        out_vector.append(vector1[x] + vector2[x])
+    
+    return out_vector
+    
+    
+def subtract_vectors(vector1, vector2):
+    """ Utility function to subtract two vectors. Assumes that vectors are same length """
+    out_vector = []
+    for x in xrange(len(vector1)):
+        out_vector.append(vector1[x] - vector2[x])
+    
+    return out_vector
+
+def multiply_vector(vector, scalar):
+    """ Utility function to multiply a vector with a scalar. Assumes that vectors are same length """
+    out_vector = []
+    for x in xrange(len(vector)):
+        out_vector.append(vector[x] * scalar)
+        
+    return out_vector
+
 class DifferentialEvolver:
     _population = []
     _num_dimensions = 0
@@ -40,19 +66,21 @@ class DifferentialEvolver:
                 # Create a random value
                 curr.append(random.random())
             self._population.append(curr)
+            
+            # Initialise the score for that item to 0
+            self._scores.append(0)
+    
+    def calc_fitness(self, vector):
+        """ Calculate the fitness of a vector """
         
-    def calc_fitness(self):
+        return self._obj_function(vector)
+    
+    def calc_fitness_population(self):
         """ Calculate the fitness of the current population, using the objective function. """
         
         for x in xrange(self._pop_size):
             curr = self._population[x]
-            self._scores[x] = self._obj_function(curr)
-    
-    def evolve(self):
-        """ Evolve the population using Differential Evolution. """
-        
-        print "Evolving Population..."
-        self.calc_fitness()
+            self._scores[x] = self.calc_fitness(curr)
         
     def __init__(self, num_dimensions, pop_size=DEF_POP_SIZE, crossover_rate=DEF_POP_SIZE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
         """ Initialise the DE
@@ -76,17 +104,64 @@ class DifferentialEvolver:
         self._num_diff_vectors = num_diff_vectors
         self._cr_scheme = crossover_scheme
         self._obj_function = obj_function
-        
-        # initialise the scores to 0
         self._scores = []
-        for x in xrange(self._pop_size):
-            self._scores.append(0)
         
     def start(self):
-        """ Start the DE process """
+        """ Start the DE Evolution process """
+        # Generate randomly an initial population of solutions.
         self.init_population()
-        self.evolve()
-    
+        # Calculate the fitness of the initial population.
+        self.calc_fitness_population()
+        
+        # Repeat
+        while True:
+            # For each parent, select three solutions at random. Create one offspring (variant vector) using the DE operators.
+            offspring = []
+            for i in xrange(self._pop_size):
+                variant = self.get_variant_vector(i)
+                offspring.append(variant)
+                
+            # Create the trial vectors, using crossover
+            
+                
+             
+            # For each member of the next generation
+            for i in xrange(self._pop_size):
+                # If offspring(x) is more fit than parent(x) Parent(x) is replaced.
+                fitness_parent = self.calc_fitness(self._population[i])
+                fitness_offspring = self.calc_fitness(offspring[i])
+                
+                
+            
+            # Until a stop condition is satisfied.
+        
+    def get_variant_vector(self, index):
+        """  Calculate the variant vector for the parent at the given index. Uses the following formula: Vj(t + 1) = Xm(t) + F(Xk(t) - Xl(t)) """
+        parent = self._population[index]
+                
+        pop_without_parent = list(self._population) # Make sure that we don't select the parent vector
+        pop_without_parent.remove(parent)
+        
+        num_to_select = 1 + self._num_diff_vectors*2 #first number '1' is the base vector, others are the difference vectors in pairs
+        rand_vectors = self._selector(self._population, num_to_select)
+        
+        base_vector = rand_vectors[0]
+        
+        diff_vector_tuples = []
+        # Create tuples of the variant vectors
+        for x in xrange(1, len(rand_vectors), 2):
+            diff_vector_tuples.append((rand_vectors[x], rand_vectors[x+1]))
+        
+        diff_vector_tuple = diff_vector_tuples[0]
+        diff_vector_final = multiply_vector(subtract_vectors(diff_vector_tuple[0], diff_vector_tuple[1]), self._scale_factor)
+        
+        for x in xrange(1, len(diff_vector_tuples)):
+            diff_vector_tuple = diff_vector_tuples[x]
+            temp_vector = multiply_vector(subtract_vectors(diff_vector_tuple[0], diff_vector_tuple[1]), self._scale_factor)
+            diff_vector_final = add_vectors(diff_vector_final, temp_vector)
+            
+        return add_vectors(base_vector, diff_vector_final)
+                
 if __name__ == '__main__':
-    evolver = DifferentialEvolver(20)
+    evolver = DifferentialEvolver(20, num_diff_vectors=2)
     evolver.start()
