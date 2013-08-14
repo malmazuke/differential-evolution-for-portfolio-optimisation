@@ -124,7 +124,7 @@ class DifferentialEvolver:
         base_vector = rand_vectors[0]
         
         diff_vector_tuples = []
-        # Create tuples of the variant vectors
+        # Create tuples of the difference vectors
         for x in xrange(1, len(rand_vectors), 2):
             diff_vector_tuples.append((rand_vectors[x], rand_vectors[x+1]))
         
