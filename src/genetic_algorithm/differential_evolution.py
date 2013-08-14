@@ -70,27 +70,18 @@ class DifferentialEvolver:
                 curr.append(random.random())
             self._population.append(curr)
             
-            # Initialise the score for that item to 0
-            self._scores.append(0)
+            # Calculate the score for the current value
+            self._scores.append(self.calc_fitness(curr))
     
     def calc_fitness(self, vector):
         """ Calculate the fitness of a vector """
         
         return self._obj_function(vector)
-    
-    def calc_fitness_population(self):
-        """ Calculate the fitness of the current population, using the objective function. """
-        
-        for x in xrange(self._pop_size):
-            curr = self._population[x]
-            self._scores[x] = self.calc_fitness(curr)
         
     def start(self):
         """ Start the DE Evolution process """
-        # Generate randomly an initial population of solutions.
+        # Generate randomly an initial population of solutions, and calculate the fitnesses/scores
         self.init_population()
-        # Calculate the fitness of the initial population.
-        self.calc_fitness_population()
         
         curr_gen = 0
         # Repeat
