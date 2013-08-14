@@ -40,7 +40,7 @@ def subtract_vectors(vector1, vector2):
     return out_vector
 
 def multiply_vector(vector, scalar):
-    """ Utility function to multiply a vector with a scalar. Assumes that vectors are same length """
+    """ Utility function to multiply a vector with a scalar """
     out_vector = []
     for x in xrange(len(vector)):
         out_vector.append(vector[x] * scalar)
