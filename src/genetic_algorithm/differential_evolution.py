@@ -82,7 +82,7 @@ class DifferentialEvolver:
             curr = self._population[x]
             self._scores[x] = self.calc_fitness(curr)
         
-    def __init__(self, num_dimensions, pop_size=DEF_POP_SIZE, crossover_rate=DEF_POP_SIZE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
+    def __init__(self, num_dimensions, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
         """ Initialise the DE
         
         Keyword arguments:
@@ -122,8 +122,9 @@ class DifferentialEvolver:
                 offspring.append(variant)
                 
             # Create the trial vectors, using crossover
-            
-                
+            for i in xrange(self._pop_size):
+                trial = self.get_trial_vector(self._population[i], offspring[i])
+                offspring[i] = trial
              
             # For each member of the next generation
             for i in xrange(self._pop_size):
@@ -152,16 +153,39 @@ class DifferentialEvolver:
         for x in xrange(1, len(rand_vectors), 2):
             diff_vector_tuples.append((rand_vectors[x], rand_vectors[x+1]))
         
+        # Calculate the "difference vector" part of the equation, starting with the first F(Xk(t) - Xl(t))
         diff_vector_tuple = diff_vector_tuples[0]
         diff_vector_final = multiply_vector(subtract_vectors(diff_vector_tuple[0], diff_vector_tuple[1]), self._scale_factor)
         
+        # Add the other difference vectors, if there are any
         for x in xrange(1, len(diff_vector_tuples)):
             diff_vector_tuple = diff_vector_tuples[x]
             temp_vector = multiply_vector(subtract_vectors(diff_vector_tuple[0], diff_vector_tuple[1]), self._scale_factor)
             diff_vector_final = add_vectors(diff_vector_final, temp_vector)
             
+        # Add it to the base vector, and return the result
         return add_vectors(base_vector, diff_vector_final)
-                
+    
+    def get_trial_vector(self, parent, variant):
+        """ Get the trial vector by performing crossover between the parent, j, and its variant"""
+        
+        out_vector = []
+        # Get a random index, so we are guaranteed at least one cross-over
+        rand_index = random.randint(0, self._num_dimensions-1)
+        
+        # For each attribute, determine whether we crossover or not
+        for x in xrange(self._num_dimensions):
+            rand = random.random()
+            # Vjk(t + 1), if (rand <= CR) or (x = rnbr(ind))
+            if (rand <= self._cr_rate) or (x == rand_index):
+                out_vector.append(variant[x]) 
+            # Xjk(t), if (rand > CR) and (x != rnbr(ind))
+            else:
+                out_vector.append(parent[x])
+        
+        return out_vector
+            
+        
 if __name__ == '__main__':
     evolver = DifferentialEvolver(20, num_diff_vectors=2)
     evolver.start()
