@@ -131,7 +131,9 @@ class DifferentialEvolver:
                 # If offspring(x) is more fit than parent(x) Parent(x) is replaced.
                 fitness_parent = self.calc_fitness(self._population[i])
                 fitness_offspring = self.calc_fitness(offspring[i])
-                
+                if fitness_offspring < fitness_parent:
+                    self._scores[i] = fitness_offspring
+                    self._population[i] = offspring[i]
                 
             
             # Until a stop condition is satisfied.
@@ -187,5 +189,5 @@ class DifferentialEvolver:
             
         
 if __name__ == '__main__':
-    evolver = DifferentialEvolver(20, num_diff_vectors=2)
+    evolver = DifferentialEvolver(3, num_diff_vectors=1)
     evolver.start()
