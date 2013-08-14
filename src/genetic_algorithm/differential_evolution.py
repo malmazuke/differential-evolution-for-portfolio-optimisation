@@ -7,7 +7,9 @@ Created on Aug 11, 2013
 '''
 
 from objective_function.SchwefelFunction import schwefel_function
+from objective_function.OneMax import one_max
 from selection_function.RandomSelector import rand_selector
+
 import random
 
 DEF_POP_SIZE=-1
@@ -17,6 +19,7 @@ DEF_SELECTOR=rand_selector
 DEF_NUM_DIFF_VECTORS=1
 DEF_CR_SCHEME="bin"
 DEF_OBJ_FUNCT=schwefel_function
+DEF_MAX_GENS=10000
 
 
 def add_vectors(vector1, vector2):
@@ -82,11 +85,12 @@ class DifferentialEvolver:
             curr = self._population[x]
             self._scores[x] = self.calc_fitness(curr)
         
-    def __init__(self, num_dimensions, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
+    def __init__(self, num_dimensions, max_gens=DEF_MAX_GENS, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
         """ Initialise the DE
         
         Keyword arguments:
         num_dimensions -- the number of dimensions in each member of the population
+        max_gens -- the maximum number of generations to run (default '10000')
         pop_size -- the number in the population (default '10 * num_dimensions')
         crossover_rate -- the chance of crossover (default '0.4')
         scaling_factor -- the scaling factor (default '0.4')
@@ -97,6 +101,7 @@ class DifferentialEvolver:
         """
         
         self._num_dimensions = num_dimensions
+        self._max_gens = max_gens
         self._pop_size =  num_dimensions * 10 if (pop_size == DEF_POP_SIZE) else pop_size
         self._cr_rate = crossover_rate
         self._scale_factor = scaling_factor
@@ -113,8 +118,9 @@ class DifferentialEvolver:
         # Calculate the fitness of the initial population.
         self.calc_fitness_population()
         
+        curr_gen = 0
         # Repeat
-        while True:
+        while curr_gen < self._max_gens:
             # For each parent, select three solutions at random. Create one offspring (variant vector) using the DE operators.
             offspring = []
             for i in xrange(self._pop_size):
@@ -131,10 +137,13 @@ class DifferentialEvolver:
                 # If offspring(x) is more fit than parent(x) Parent(x) is replaced.
                 fitness_parent = self.calc_fitness(self._population[i])
                 fitness_offspring = self.calc_fitness(offspring[i])
-                if fitness_offspring < fitness_parent:
+                if fitness_offspring > fitness_parent:
                     self._scores[i] = fitness_offspring
                     self._population[i] = offspring[i]
-                
+            
+            curr_gen += 1
+        
+        print self._population
             
             # Until a stop condition is satisfied.
         
@@ -189,5 +198,5 @@ class DifferentialEvolver:
             
         
 if __name__ == '__main__':
-    evolver = DifferentialEvolver(3, num_diff_vectors=1)
+    evolver = DifferentialEvolver(3, num_diff_vectors=1, obj_function=one_max)
     evolver.start()
