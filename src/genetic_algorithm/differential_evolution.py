@@ -19,7 +19,7 @@ DEF_SELECTOR=rand_selector
 DEF_NUM_DIFF_VECTORS=1
 DEF_CR_SCHEME="bin"
 DEF_OBJ_FUNCT=schwefel_function
-DEF_MAX_GENS=10000
+DEF_MAX_GENS=1000
 
 
 def add_vectors(vector1, vector2):
@@ -85,32 +85,6 @@ class DifferentialEvolver:
             curr = self._population[x]
             self._scores[x] = self.calc_fitness(curr)
         
-    def __init__(self, num_dimensions, max_gens=DEF_MAX_GENS, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
-        """ Initialise the DE
-        
-        Keyword arguments:
-        num_dimensions -- the number of dimensions in each member of the population
-        max_gens -- the maximum number of generations to run (default '10000')
-        pop_size -- the number in the population (default '10 * num_dimensions')
-        crossover_rate -- the chance of crossover (default '0.4')
-        scaling_factor -- the scaling factor (default '0.4')
-        selector -- the base-vector selection method, either 'rand_selector' or 'best_selector' (default 'rand_selector')
-        num_diff_vectors -- the number of difference vectors to use (default '1')
-        crossover_scheme -- the crossover scheme to use, either 'bin' for experiments based on independent binomial experiments, or 'exp' for exponential crossover (default 'bin')
-        obj_function -- a function that takes a vector, and returns a fitness rating (default 'schwefel_function')
-        """
-        
-        self._num_dimensions = num_dimensions
-        self._max_gens = max_gens
-        self._pop_size =  num_dimensions * 10 if (pop_size == DEF_POP_SIZE) else pop_size
-        self._cr_rate = crossover_rate
-        self._scale_factor = scaling_factor
-        self._selector = selector
-        self._num_diff_vectors = num_diff_vectors
-        self._cr_scheme = crossover_scheme
-        self._obj_function = obj_function
-        self._scores = []
-        
     def start(self):
         """ Start the DE Evolution process """
         # Generate randomly an initial population of solutions.
@@ -137,15 +111,14 @@ class DifferentialEvolver:
                 # If offspring(x) is more fit than parent(x) Parent(x) is replaced.
                 fitness_parent = self.calc_fitness(self._population[i])
                 fitness_offspring = self.calc_fitness(offspring[i])
-                if fitness_offspring > fitness_parent:
+                if fitness_offspring < fitness_parent:
                     self._scores[i] = fitness_offspring
                     self._population[i] = offspring[i]
             
+            # Until a stop condition is satisfied.
             curr_gen += 1
         
-        print self._population
-            
-            # Until a stop condition is satisfied.
+        self.print_results()
         
     def get_variant_vector(self, index):
         """  Calculate the variant vector for the parent at the given index. Uses the following formula: Vj(t + 1) = Xm(t) + F(Xk(t) - Xl(t)) """
@@ -195,8 +168,37 @@ class DifferentialEvolver:
                 out_vector.append(parent[x])
         
         return out_vector
-            
+    
+    def print_results(self):
+        for x in xrange(self._pop_size):
+            print "fitness: " + str(self._scores[x]) + " sum: " + str(sum(self._population[x])) + " values: " + str(self._population[x])
+        
+    def __init__(self, num_dimensions, max_gens=DEF_MAX_GENS, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
+        """ Initialise the DE
+        
+        Keyword arguments:
+        num_dimensions -- the number of dimensions in each member of the population
+        max_gens -- the maximum number of generations to run (default '10000')
+        pop_size -- the number in the population (default '10 * num_dimensions')
+        crossover_rate -- the chance of crossover (default '0.4')
+        scaling_factor -- the scaling factor (default '0.4')
+        selector -- the base-vector selection method, either 'rand_selector' or 'best_selector' (default 'rand_selector')
+        num_diff_vectors -- the number of difference vectors to use (default '1')
+        crossover_scheme -- the crossover scheme to use, either 'bin' for experiments based on independent binomial experiments, or 'exp' for exponential crossover (default 'bin')
+        obj_function -- a function that takes a vector, and returns a fitness rating (default 'schwefel_function')
+        """
+        
+        self._num_dimensions = num_dimensions
+        self._max_gens = max_gens
+        self._pop_size =  num_dimensions * 10 if (pop_size == DEF_POP_SIZE) else pop_size
+        self._cr_rate = crossover_rate
+        self._scale_factor = scaling_factor
+        self._selector = selector
+        self._num_diff_vectors = num_diff_vectors
+        self._cr_scheme = crossover_scheme
+        self._obj_function = obj_function
+        self._scores = []
         
 if __name__ == '__main__':
-    evolver = DifferentialEvolver(3, num_diff_vectors=1, obj_function=one_max)
+    evolver = DifferentialEvolver(5, num_diff_vectors=1, obj_function=one_max, max_gens=50, scaling_factor=0.4)
     evolver.start()

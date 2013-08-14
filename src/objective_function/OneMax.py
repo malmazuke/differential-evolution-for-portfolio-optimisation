@@ -6,13 +6,19 @@ Created on Aug 14, 2013
 
 def one_max(vector):
     """ Calculate the fitness of a vector, based on how close the values average to 1. If the value is greater than 1, return 0 """
+
+    total = sum(vector)
+    total = pow(total, 2)
     
-    total = 0
-    n = len(vector)
-    for x in xrange(n):
-        total += vector[x]
-    
-    val = total/float(n)
-    if val > 1:
-        return 0
-    return val
+    diff = abs(total - 10)
+    return diff
+
+#     total = 0
+#     n = len(vector)
+#     for x in xrange(n):
+#         total += vector[x]
+#     
+#     val = total/float(n)
+#     if val > 1:
+#         return 0
+#     return val
