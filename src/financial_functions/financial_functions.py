@@ -6,7 +6,8 @@ Created on Aug 15, 2013
 @requires: The Numpy library
 '''
 
-import numpy
+from numpy import array,ones,linalg, std, vstack
+# import pylab
 
 class Component:
     """ A component/company in the Dow Jones """
@@ -16,6 +17,8 @@ class Component:
     _returns = []
     _av_daily_return = None
     _volatility = None
+    _alpha = None
+    _beta = None
     
     def __init__(self, name):
         self._name = name
@@ -49,9 +52,35 @@ class Component:
     
     def calc_volatility(self):
         """ Simply calculates the standard deviation over the daily returns """
-        volatility = numpy.std(self._returns)
+        volatility = std(self._returns)
         self._volatility = volatility
         return volatility
+    
+    def calc_alpha_beta(self, dow_jones):
+        """ Applies linear regression to calculate the alpha and beta values compared to the daily return of the entire sector (i.e. the Dow Jones Industrial Average)"""
+        
+        x = array(dow_jones.get_returns())
+        y = array(self._returns)
+        
+        A = vstack([x, ones(len(x))]).T
+        
+        m, c = linalg.lstsq(A, y)[0]
+        
+#         pylab.plot(x, y, 'o', label='Daily returns', markersize=3)
+#         pylab.plot(x, m*x + c, 'r', label='Fitted line')
+#         pylab.ylabel(self._name)
+#         pylab.xlabel(dow_jones.get_name())
+#         pylab.legend()
+#         pylab.show()
+        
+        self._beta = m
+        self._alpha = c
+    
+    def get_name(self):
+        return self._name
+    
+    def get_returns(self):
+        return self._returns
     
     def get_av_daily_return(self):
         return self._av_daily_return
@@ -59,8 +88,11 @@ class Component:
     def get_volatility(self):
         return self._volatility
     
-    def get_name(self):
-        return self._name
+    def get_alpha(self):
+        return self._alpha
+    
+    def get_beta(self):
+        return self._beta
     
     def __str__(self):
         out = "(" + self._name
@@ -93,10 +125,8 @@ def read_data(in_csv_file):
     
     f.close()
     return components
-    
-if __name__ == '__main__':
-    components = read_data("../../data/dji.2011.csv")
-    
+
+def calc_all_daily_returns(components, csv_output=""):
     for comp in components:
         comp.calc_daily_returns()
         comp.calc_av_daily_return()
@@ -107,7 +137,7 @@ if __name__ == '__main__':
     out_values = '"2011",'
     for x in xrange(len(components)):
         comp = components[x]
-        if x == len(components):
+        if x == len(components)-1:
             out_names += "%s" % comp.get_name()
             out_values += "%.4f%%" % (comp.get_av_daily_return() * 100.0)
         else:
@@ -117,12 +147,13 @@ if __name__ == '__main__':
     print out_names
     print out_values
     
-    fw = open("../../data/av_daily_returns_2011.csv", 'w')
-    fw.write(out_names + "\n")
-    fw.write(out_values)
-    fw.close()
+    if csv_output is not "": 
+        fw = open(csv_output, 'w')
+        fw.write(out_names + "\n")
+        fw.write(out_values)
+        fw.close()
     
-    # Calculate the volatility of each component
+def calc_all_volatility(components, csv_output=""):
     for comp in components:
         comp.calc_volatility()
         
@@ -131,7 +162,7 @@ if __name__ == '__main__':
     out_values = '"2011",'
     for x in xrange(len(components)):
         comp = components[x]
-        if x == len(components):
+        if x == len(components)-1:
             out_names += "%s" % comp.get_name()
             out_values += "%.4f%%" % (comp.get_volatility() * 100.0)
         else:
@@ -141,13 +172,72 @@ if __name__ == '__main__':
     print out_names
     print out_values
     
-    fw = open("../../data/volatility_2011.csv", 'w')
-    fw.write(out_names + "\n")
-    fw.write(out_values)
-    fw.close()
-#     print "Average daily returns 2011:"
-#     average_daily_return("../../data/dji.2011.csv", "../../data/av_daily_returns_2011.csv")
-#     print "Average daily returns 2012:" 
-#     average_daily_return("../../data/dji.2012.csv", "../../data/av_daily_returns_2012.csv")
-#     print "Volatility 2011:"
+    if csv_output is not "":
+        fw = open(csv_output, 'w')
+        fw.write(out_names + "\n")
+        fw.write(out_values)
+        fw.close()
+    
+def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
+    dow_jones = components[0]
+    
+    for x in xrange(1, len(components)):
+        comp = components[x]
+        comp.calc_alpha_beta(dow_jones)
+        
+    print "\nAlpha values 2011:"
+    out_names = '"",'
+    out_values = '"2011",'
+    for x in xrange(1, len(components)):
+        comp = components[x]
+        if x == len(components)-1:
+            out_names += "%s" % comp.get_name()
+            out_values += "%.5f" % (comp.get_alpha())
+        else:
+            out_names += "%s," % comp.get_name()
+            out_values += "%.5f," % (comp.get_alpha())
+    
+    print out_names
+    print out_values
+    
+    if csv_output_alpha is not "":
+        fw = open(csv_output_alpha, 'w')
+        fw.write(out_names + "\n")
+        fw.write(out_values)
+        fw.close()
+        
+    print "\nBeta values 2011:"
+    out_names = '"",'
+    out_values = '"2011",'
+    for x in xrange(1, len(components)):
+        comp = components[x]
+        if x == len(components)-1:
+            out_names += "%s" % comp.get_name()
+            out_values += "%.5f" % (comp.get_beta())
+        else:
+            out_names += "%s," % comp.get_name()
+            out_values += "%.5f," % (comp.get_beta())
+    
+    print out_names
+    print out_values
+    
+    if csv_output_beta is not "":
+        fw = open(csv_output_beta, 'w')
+        fw.write(out_names + "\n")
+        fw.write(out_values)
+        fw.close()
+    
+if __name__ == '__main__':
+    components = read_data("../../data/dji.2011.csv")
+    
+    # Calculate the average daily return of each component
+    calc_all_daily_returns(components, "../../data/av_daily_returns_2011.csv")
+    
+    # Calculate the volatility of each component
+    calc_all_volatility(components, "../../data/volatility_2011.csv")
+    
+    # Calculate the alpha and beta values
+    calc_all_alpha_beta(components, "../../data/alpha_2011.csv", "../../data/beta_2011.csv")
+    
+    
     
