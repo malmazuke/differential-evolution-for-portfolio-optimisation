@@ -9,6 +9,8 @@ Created on Aug 15, 2013
 from numpy import array,ones,linalg, std, vstack
 # import pylab
 
+year = "2011"
+
 class Component:
     """ A component/company in the Dow Jones """
     
@@ -106,7 +108,7 @@ class Component:
     def __repr__(self):
         return self.__str__()
 
-def read_data(in_csv_file):
+def read_data(in_csv_file):    
     components = []
     f = open(in_csv_file, 'r')
     
@@ -127,11 +129,12 @@ def read_data(in_csv_file):
     return components
 
 def calc_all_daily_returns(components, csv_output=""):
+    global year
     for comp in components:
         comp.calc_daily_returns()
         comp.calc_av_daily_return()
         
-    print "Average daily returns 2011:"
+    print "Average daily returns " + year + ":"
     # Very inefficient way of outputting data
     out_names = '"",'
     out_values = '"2011",'
@@ -154,10 +157,11 @@ def calc_all_daily_returns(components, csv_output=""):
         fw.close()
     
 def calc_all_volatility(components, csv_output=""):
+    global year
     for comp in components:
         comp.calc_volatility()
         
-    print "\nVolatility (std dev) 2011:"
+    print "\nVolatility (std dev) " + year + ":"
     out_names = '"",'
     out_values = '"2011",'
     for x in xrange(len(components)):
@@ -179,6 +183,7 @@ def calc_all_volatility(components, csv_output=""):
         fw.close()
     
 def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
+    global year
     """ Calculates and prints/saves the alpha and beta values """
     dow_jones = components[0]
     
@@ -186,7 +191,7 @@ def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
         comp = components[x]
         comp.calc_alpha_beta(dow_jones)
         
-    print "\nAlpha values 2011:"
+    print "\nAlpha values " + year + ":"
     out_names = '"",'
     out_values = '"2011",'
     for x in xrange(1, len(components)):
@@ -207,7 +212,7 @@ def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
         fw.write(out_values)
         fw.close()
         
-    print "\nBeta values 2011:"
+    print "\nBeta values " + year + ":"
     out_names = '"",'
     out_values = '"2011",'
     for x in xrange(1, len(components)):
@@ -230,7 +235,7 @@ def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
             
 if __name__ == '__main__':
     components = read_data("../../data/dji.2011.csv")
-    
+    year = "2011"
     # Calculate the average daily return of each component
     calc_all_daily_returns(components, "../../data/av_daily_returns_2011.csv")
     
@@ -239,3 +244,17 @@ if __name__ == '__main__':
     
     # Calculate the alpha and beta values
     calc_all_alpha_beta(components, "../../data/alpha_2011.csv", "../../data/beta_2011.csv")
+    
+    year = "2012"
+    # Do the 2012 data too
+    components = read_data("../../data/dji.2012.csv")
+    
+    # Calculate the average daily return of each component
+    calc_all_daily_returns(components, "../../data/av_daily_returns_2012.csv")
+    
+    # Calculate the volatility of each component
+    calc_all_volatility(components, "../../data/volatility_2012.csv")
+    
+    # Calculate the alpha and beta values
+    calc_all_alpha_beta(components, "../../data/alpha_2012.csv", "../../data/beta_2012.csv")
+    
