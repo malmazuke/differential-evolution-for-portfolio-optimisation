@@ -2,14 +2,20 @@
 Created on Aug 15, 2013
 
 @author: markfeaver
+@summary: A bunch of methods for calculating financial statistics, such as the average daily return, volatility, and alpha/beta values
+@requires: The Numpy library
 '''
+
+import numpy
+
 class Component:
     """ A component/company in the Dow Jones """
     
     _name = ""
     _prices = []
     _returns = []
-    _av_daily_return = 0.0
+    _av_daily_return = None
+    _volatility = None
     
     def __init__(self, name):
         self._name = name
@@ -41,16 +47,27 @@ class Component:
         self._av_daily_return = av_return
         return av_return
     
+    def calc_volatility(self):
+        """ Simply calculates the standard deviation over the daily returns """
+        volatility = numpy.std(self._returns)
+        self._volatility = volatility
+        return volatility
+    
     def get_av_daily_return(self):
         return self._av_daily_return
+    
+    def get_volatility(self):
+        return self._volatility
     
     def get_name(self):
         return self._name
     
     def __str__(self):
         out = "(" + self._name
-        if self._av_daily_return != 0.0:
+        if self._av_daily_return is not None:
             out += ", %.4f%%" % self._av_daily_return
+        if self._volatility is not None:
+            out += ", %.4f%%" % self._volatility
         out += ")" 
         return out
     
@@ -87,22 +104,46 @@ if __name__ == '__main__':
     print "Average daily returns 2011:"
     # Very inefficient way of outputting data
     out_names = '"",'
-    out_returns = '"2011",'
+    out_values = '"2011",'
     for x in xrange(len(components)):
         comp = components[x]
         if x == len(components):
             out_names += "%s" % comp.get_name()
-            out_returns += "%.2f%%" % (comp.get_av_daily_return() * 100.0)
+            out_values += "%.4f%%" % (comp.get_av_daily_return() * 100.0)
         else:
             out_names += "%s," % comp.get_name()
-            out_returns += "%.2f%%," % (comp.get_av_daily_return() * 100.0)
+            out_values += "%.4f%%," % (comp.get_av_daily_return() * 100.0)
     
     print out_names
-    print out_returns
+    print out_values
     
     fw = open("../../data/av_daily_returns_2011.csv", 'w')
     fw.write(out_names + "\n")
-    fw.write(out_returns)
+    fw.write(out_values)
+    fw.close()
+    
+    # Calculate the volatility of each component
+    for comp in components:
+        comp.calc_volatility()
+        
+    print "\nVolatility (std dev) 2011:"
+    out_names = '"",'
+    out_values = '"2011",'
+    for x in xrange(len(components)):
+        comp = components[x]
+        if x == len(components):
+            out_names += "%s" % comp.get_name()
+            out_values += "%.4f%%" % (comp.get_volatility() * 100.0)
+        else:
+            out_names += "%s," % comp.get_name()
+            out_values += "%.4f%%," % (comp.get_volatility() * 100.0)
+    
+    print out_names
+    print out_values
+    
+    fw = open("../../data/volatility_2011.csv", 'w')
+    fw.write(out_names + "\n")
+    fw.write(out_values)
     fw.close()
 #     print "Average daily returns 2011:"
 #     average_daily_return("../../data/dji.2011.csv", "../../data/av_daily_returns_2011.csv")
