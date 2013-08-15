@@ -179,6 +179,7 @@ def calc_all_volatility(components, csv_output=""):
         fw.close()
     
 def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
+    """ Calculates and prints/saves the alpha and beta values """
     dow_jones = components[0]
     
     for x in xrange(1, len(components)):
@@ -192,10 +193,10 @@ def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
         comp = components[x]
         if x == len(components)-1:
             out_names += "%s" % comp.get_name()
-            out_values += "%.5f" % (comp.get_alpha())
+            out_values += "%.5f%%" % (comp.get_alpha() * 100)
         else:
             out_names += "%s," % comp.get_name()
-            out_values += "%.5f," % (comp.get_alpha())
+            out_values += "%.5f%%," % (comp.get_alpha() * 100)
     
     print out_names
     print out_values
@@ -226,7 +227,7 @@ def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
         fw.write(out_names + "\n")
         fw.write(out_values)
         fw.close()
-    
+            
 if __name__ == '__main__':
     components = read_data("../../data/dji.2011.csv")
     
@@ -238,6 +239,3 @@ if __name__ == '__main__':
     
     # Calculate the alpha and beta values
     calc_all_alpha_beta(components, "../../data/alpha_2011.csv", "../../data/beta_2011.csv")
-    
-    
-    
