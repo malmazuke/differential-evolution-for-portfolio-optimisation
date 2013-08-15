@@ -9,6 +9,7 @@ Created on Aug 15, 2013
 from numpy import array,ones,linalg, std, vstack
 # import pylab
 
+# Ugly, but works
 year = "2011"
 
 class Component:
