@@ -6,11 +6,10 @@ Created on Aug 11, 2013
 @summary: A Python implementation of Differential Evolution, using the DE/rand/1/bin scheme
 '''
 
-from objective_function.SchwefelFunction import schwefel_function
-from objective_function.OneMax import one_max
-from selection_function.RandomSelector import rand_selector
-
 import random
+from selection_function.random_selector import rand_selector
+from objective_function.one_max import OneMax
+from objective_function.max_av_return import MaxAverageReturn
 
 DEF_POP_SIZE=-1
 DEF_CR_RATE=0.4
@@ -18,7 +17,7 @@ DEF_SCALE_FACTOR=0.4
 DEF_SELECTOR=rand_selector
 DEF_NUM_DIFF_VECTORS=1
 DEF_CR_SCHEME="bin"
-DEF_OBJ_FUNCT=schwefel_function
+DEF_OBJ_FUNCT=OneMax()
 DEF_MAX_GENS=1000
 
 
@@ -76,7 +75,7 @@ class DifferentialEvolver:
     def calc_fitness(self, vector):
         """ Calculate the fitness of a vector """
         
-        return self._obj_function(vector)
+        return self._obj_function.calc_fitness(vector)
         
     def start(self):
         """ Start the DE Evolution process """
@@ -99,12 +98,15 @@ class DifferentialEvolver:
              
             # For each member of the next generation
             for i in xrange(self._pop_size):
-                # If offspring(x) is more fit than parent(x) Parent(x) is replaced.
-                fitness_parent = self.calc_fitness(self._population[i])
-                fitness_offspring = self.calc_fitness(offspring[i])
-                if fitness_offspring < fitness_parent:
-                    self._scores[i] = fitness_offspring
-                    self._population[i] = offspring[i]
+                # Get the fitter of the two value, and its fitness value
+                fittest, fitness = self._obj_function.select_fittest(self._population[i], offspring[i])
+                self._population[i] = fittest
+                self._scores[i] = fitness
+#                 fitness_parent = self.calc_fitness(self._population[i])
+#                 fitness_offspring = self.calc_fitness(offspring[i])
+#                 if fitness_offspring < fitness_parent:
+#                     self._scores[i] = fitness_offspring
+#                     self._population[i] = offspring[i]
             
             # Until a stop condition is satisfied.
             curr_gen += 1
@@ -161,10 +163,11 @@ class DifferentialEvolver:
         return out_vector
     
     def print_results(self):
-        print "For d:" + str(self._num_dimensions) + ", pop_size: " + str(self._pop_size) + ", max_gens:" + str(self._max_gens) + ", scale_factor: " + str(self._scale_factor) + \
-        ", crossover_rate: " + str(self._cr_rate)
+        print "For d:" + str(self._num_dimensions) + " pop_size: " + str(self._pop_size) + " max_gens:" + str(self._max_gens) + " scale_factor: " + str(self._scale_factor) + \
+        " crossover_rate: " + str(self._cr_rate)
+        print "fitness,sum,values"
         for x in xrange(self._pop_size):
-            print "fitness: " + str(self._scores[x]) + " sum: " + str(sum(self._population[x])) + " values: " + str(self._population[x])
+            print str(self._scores[x]) + "," + str(sum(self._population[x])) + "," + str(self._population[x])
         
     def __init__(self, num_dimensions, max_gens=DEF_MAX_GENS, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
         """ Initialise the DE
@@ -193,5 +196,8 @@ class DifferentialEvolver:
         self._scores = []
         
 if __name__ == '__main__':
-    evolver = DifferentialEvolver(5, num_diff_vectors=1, obj_function=one_max, max_gens=500, scaling_factor=0.4)
+#     objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
+    objective_function = OneMax() 
+    
+    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=50, scaling_factor=0.4)
     evolver.start()

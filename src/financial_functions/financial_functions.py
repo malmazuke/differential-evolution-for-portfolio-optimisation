@@ -137,16 +137,16 @@ def calc_all_daily_returns(components, csv_output=""):
         
     print "Average daily returns " + year + ":"
     # Very inefficient way of outputting data
-    out_names = '"",'
-    out_values = '"2011",'
+    out_names = ''
+    out_values = ''
     for x in xrange(len(components)):
         comp = components[x]
         if x == len(components)-1:
             out_names += "%s" % comp.get_name()
-            out_values += "%.4f%%" % (comp.get_av_daily_return() * 100.0)
+            out_values += "%f" % (comp.get_av_daily_return())
         else:
             out_names += "%s," % comp.get_name()
-            out_values += "%.4f%%," % (comp.get_av_daily_return() * 100.0)
+            out_values += "%f," % (comp.get_av_daily_return())
     
     print out_names
     print out_values
@@ -163,16 +163,16 @@ def calc_all_volatility(components, csv_output=""):
         comp.calc_volatility()
         
     print "\nVolatility (std dev) " + year + ":"
-    out_names = '"",'
-    out_values = '"2011",'
+    out_names = ''
+    out_values = ''
     for x in xrange(len(components)):
         comp = components[x]
         if x == len(components)-1:
             out_names += "%s" % comp.get_name()
-            out_values += "%.4f%%" % (comp.get_volatility() * 100.0)
+            out_values += "%f" % (comp.get_volatility())
         else:
             out_names += "%s," % comp.get_name()
-            out_values += "%.4f%%," % (comp.get_volatility() * 100.0)
+            out_values += "%f," % (comp.get_volatility())
     
     print out_names
     print out_values
@@ -193,16 +193,16 @@ def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
         comp.calc_alpha_beta(dow_jones)
         
     print "\nAlpha values " + year + ":"
-    out_names = '"",'
-    out_values = '"2011",'
+    out_names = ''
+    out_values = ''
     for x in xrange(1, len(components)):
         comp = components[x]
         if x == len(components)-1:
             out_names += "%s" % comp.get_name()
-            out_values += "%.5f%%" % (comp.get_alpha() * 100)
+            out_values += "%f" % (comp.get_alpha())
         else:
             out_names += "%s," % comp.get_name()
-            out_values += "%.5f%%," % (comp.get_alpha() * 100)
+            out_values += "%f," % (comp.get_alpha())
     
     print out_names
     print out_values
@@ -214,16 +214,16 @@ def calc_all_alpha_beta(components, csv_output_alpha="", csv_output_beta=""):
         fw.close()
         
     print "\nBeta values " + year + ":"
-    out_names = '"",'
-    out_values = '"2011",'
+    out_names = ''
+    out_values = ''
     for x in xrange(1, len(components)):
         comp = components[x]
         if x == len(components)-1:
             out_names += "%s" % comp.get_name()
-            out_values += "%.5f" % (comp.get_beta())
+            out_values += "%f" % (comp.get_beta())
         else:
             out_names += "%s," % comp.get_name()
-            out_values += "%.5f," % (comp.get_beta())
+            out_values += "%f," % (comp.get_beta())
     
     print out_names
     print out_values
