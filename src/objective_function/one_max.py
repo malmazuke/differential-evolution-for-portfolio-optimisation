@@ -12,7 +12,7 @@ class OneMax:
     
         total = sum(vector)
         
-        diff = abs(total - 42)
+        diff = abs(total - 1)
         return diff
     
     def select_fittest(self, vector1, vector2):

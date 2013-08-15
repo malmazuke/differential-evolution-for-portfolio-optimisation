@@ -8,15 +8,17 @@ Created on Aug 15, 2013
 
 # class MaxAverageReturn(ObjectiveFunction):
 class MaxAverageReturn:
-    """ Objective Function, that aims to maximize the daily return """
+    """ Objective Function, that aims to maximize the daily return. For this problem, there is a realistic constraint that no
+    more than eight stocks can be invested in at a time, and no more than 20% of the portfolio can be in a single stock.
+    """
     _return_data = []
     
     def calc_fitness(self, vector):
-        """ Calculates the fitness, based on the return data"""
+        """ Calculates the fitness, based on the return data. """
 
         overall_return = 0.0
         for x in xrange(len(vector)):
-            overall_return += self._return_data[x]*(vector[x]/len(vector))
+            overall_return += self._return_data[x]*(abs(vector[x])/len(vector))
         
         return overall_return
             
@@ -33,7 +35,7 @@ class MaxAverageReturn:
     def select_fittest(self, vector1, vector2):
         """ Return the fittest of the two members and its score, by comparing which has the higher return 
             
-            return -- The vector, and the fitness value (the return)
+        return -- The vector, and the fitness value (the return)
         """
         v1_return = self.calc_fitness(vector1)
         v2_return = self.calc_fitness(vector2)
