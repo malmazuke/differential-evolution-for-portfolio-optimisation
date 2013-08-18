@@ -5,6 +5,9 @@ Created on Aug 15, 2013
 '''
 
 # from objective_function.ObjectiveFunction import ObjectiveFunction
+from operator import itemgetter
+
+N_TOP_STOCKS = 8
 
 # class MaxAverageReturn(ObjectiveFunction):
 class MaxAverageReturn:
@@ -14,11 +17,20 @@ class MaxAverageReturn:
     _return_data = []
     
     def calc_fitness(self, vector):
-        """ Calculates the fitness, based on the return data. """
+        """ Calculate the fitness, based on the return data. 
+        
+        We can only select N number of stocks.
+        Also, if any of the weights are above 20%, return the worst possible fitness.
+        This enforces a '20% per stock maximum'. 
+        """
+
+        weights = self.weights_for_vector(vector)
 
         overall_return = 0.0
-        for x in xrange(len(vector)):
-            overall_return += self._return_data[x]*(abs(vector[x])/len(vector))
+        for x in xrange(len(weights)):
+            if weights[x] >= .2:
+                return 0
+            overall_return += self._return_data[x]*weights[x]
         
         return overall_return
             
@@ -47,4 +59,51 @@ class MaxAverageReturn:
         
     def get_size(self):
         return len(self._return_data)
+    
+    def weights_for_vector(self, vector):
+        """ Calculate the weights for a given vector - in this case, the top N values in the vector are selected, 
+        then are normalised to sum to 1
+        
+        return -- a vector/list containing all weights, N of which are values greater than 0, and all of which sum to 1.
+        These returned values represent the percentage of a portfolio to invest in a particular stock 
+        """
+        
+        weights = [] # going to contain N_TOP_STOCKS, and the rest are zeroes
+        
+        # This will contain tuples, so that we can keep track of the indexes when we sort to find the top N weights
+        sorted_vals = []
+        for x in xrange(len(vector)):
+            vec = (x, vector[x])
+            sorted_vals.append(vec)
+            # Initialise all the values in weights to 0, so we can simply set the appropriate ones later
+            weights.append(0.0)
+        
+        sorted_vals = sorted(sorted_vals,key=itemgetter(1), reverse=True)
+        sorted_vals = sorted_vals[:N_TOP_STOCKS]
+        
+        # Get the max and min, so we can normalise the values
+        max_value = sorted_vals[0][1]
+        min_value = sorted_vals[len(sorted_vals) - 1][1]
+        
+        # Add the top N stock weights to the weights list, normalising as we go (although we still need to normalise so that they sum to 1)
+        for x in xrange(N_TOP_STOCKS):
+            tup = sorted_vals[x]
+            index = tup[0]
+            val = (tup[1] - min_value)/(max_value - min_value)
+            sorted_vals[x] = (index, val)
+        
+        sum_weights = sum([pair[1] for pair in sorted_vals])
+        
+        for x in xrange(N_TOP_STOCKS):
+            # Now we divide by the sum of the weights, so that they add to 1
+            tup = sorted_vals[x]
+            index = tup[0]
+            val = tup[1]/sum_weights
+            weights[index] = val
+            
+        return weights
+        
+    def get_model(self, vector):
+        """ Returns a representative model of the vector - in this case, the weights that lead to an optimal return """
+        return self.weights_for_vector(vector)
     

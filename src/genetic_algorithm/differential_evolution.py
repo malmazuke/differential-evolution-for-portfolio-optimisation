@@ -167,7 +167,10 @@ class DifferentialEvolver:
         " crossover_rate: " + str(self._cr_rate)
         print "fitness,values"
         for x in xrange(self._pop_size):
-            print str(self._scores[x]) + "," + str(self._population[x])
+            print "return: " + str(self._scores[x] * 100) + "% vals: " + str(self._obj_function.get_model(self._population[x]))
+#             print str(self._scores[x]) + "," + str(self._population[x])
+#             print str(self._scores[x]) + "," + str(sum(self._population[x])) + "," + str(self._population[x])
+#             print str(self._scores[x]) + "," + str(sum(self._population[x]))
         
     def __init__(self, num_dimensions, max_gens=DEF_MAX_GENS, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
         """ Initialise the DE
@@ -199,5 +202,5 @@ if __name__ == '__main__':
     objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
 #     objective_function = OneMax() 
     
-    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=100)
+    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=1000)
     evolver.start()

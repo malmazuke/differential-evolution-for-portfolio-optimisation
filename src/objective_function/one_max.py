@@ -24,3 +24,7 @@ class OneMax:
             return vector1, v1_return
         else:
             return vector2, v2_return
+        
+    def get_model(self, vector):
+        """ Return a representative model of the vector - in this case it is the same as the vector """
+        return vector

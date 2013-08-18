@@ -18,3 +18,7 @@ class ObjectiveFunction(object):
     def select_fittest(self, vector1, vector2):
         """ Select the fittest of the two members"""
         pass
+    
+    @abstractmethod
+    def get_model(self, vector):
+        """ Return a representative model of the vector """
