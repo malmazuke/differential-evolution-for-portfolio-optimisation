@@ -80,7 +80,7 @@ class MinVolatility:
             # Initialise all the values in weights to 0, so we can simply set the appropriate ones later
             weights.append(0.0)
         
-        sorted_vals = sorted(sorted_vals,key=itemgetter(1), reverse=True)
+        sorted_vals = sorted(sorted_vals,key=itemgetter(1))
         sorted_vals = sorted_vals[:N_TOP_STOCKS]
         
         # Get the max and min, so we can normalise the values

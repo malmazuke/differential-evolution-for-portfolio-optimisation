@@ -201,10 +201,10 @@ class DifferentialEvolver:
         self._scores = []
         
 if __name__ == '__main__':
-#     objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
+    objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
 #     objective_function = MinVolatility("../../data/volatility_2011.csv")
-    objective_function = MaxRatio("../../data/av_daily_returns_2011.csv", "../../data/volatility_2011.csv")
+#     objective_function = MaxRatio("../../data/av_daily_returns_2011.csv", "../../data/volatility_2011.csv")
 #     objective_function = OneMax() 
     
-    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=300)
+    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=1000)
     evolver.start()
