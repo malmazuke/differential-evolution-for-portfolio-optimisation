@@ -113,7 +113,7 @@ class DifferentialEvolver:
             # Until a stop condition is satisfied.
             curr_gen += 1
         
-        self.print_results()
+        return self._population, self._scores
         
     def get_variant_vector(self, index):
         """  Calculate the variant vector for the parent at the given index. Uses the following formula: Vj(t + 1) = Xm(t) + F(Xk(t) - Xl(t)) """
@@ -165,11 +165,11 @@ class DifferentialEvolver:
         return out_vector
     
     def print_results(self):
-        print "For d:" + str(self._num_dimensions) + " pop_size: " + str(self._pop_size) + " max_gens:" + str(self._max_gens) + " scale_factor: " + str(self._scale_factor) + \
-        " crossover_rate: " + str(self._cr_rate)
-        print "fitness,values"
-        for x in xrange(self._pop_size):
-            print "fitness: " + str(self._scores[x] * 100) + "% vals: " + str(self._obj_function.get_model(self._population[x]))
+#         print "For d:" + str(len(results)) + " pop_size: " + str(self._pop_size) + " max_gens:" + str(self._max_gens) + " scale_factor: " + str(self._scale_factor) + \
+#         " crossover_rate: " + str(self._cr_rate)
+#         print "fitness,values"
+        for x in xrange(len(self._population)):
+            print "fitness: " + str(self._scores[x]) + " vals: " + str(self._obj_function.get_model(self._population[x]))
 #             print "fitness: " + str(self._scores[x] * 100) + "% sum: " + str(sum(self._obj_function.get_model(self._population[x])))# + "vals: " + str(self._obj_function.get_model(self._population[x]))
 #             print str(self._scores[x]) + "," + str(self._population[x])
 #             print str(self._scores[x]) + "," + str(sum(self._population[x])) + "," + str(self._population[x])
@@ -209,3 +209,5 @@ if __name__ == '__main__':
     
     evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=500)
     evolver.start()
+    
+    evolver.print_results()
