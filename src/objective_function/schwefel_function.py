@@ -1,13 +1,14 @@
 '''
-Created on Aug 14, 2013
+Created on Aug 11, 2013
 
 @author: Mark Feaver
 '''
 
 import math
-from objective_function.objective_function import ObjectiveFunction 
+# from objective_function.objective_function import ObjectiveFunction 
 
-class SchwefelFunction(ObjectiveFunction):
+# class SchwefelFunction(ObjectiveFunction):
+class SchwefelFunction:
     def calc_fitness(self, vector):
         """ Calculate the fitness of a vector from a population using the Schwefel function"""
         length = len(vector)

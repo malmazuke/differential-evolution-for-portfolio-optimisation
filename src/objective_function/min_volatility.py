@@ -1,5 +1,5 @@
 '''
-Created on Aug 15, 2013
+Created on Aug 12, 2013
 
 @author: Mark Feaver
 '''
@@ -9,15 +9,16 @@ from operator import itemgetter
 
 N_TOP_STOCKS = 8
 
-# class MaxAverageReturn(ObjectiveFunction):
+# class MinVolatility(ObjectiveFunction):
 class MinVolatility:
-    """ Objective Function, that aims to minimize the volatility. For this problem, there is a realistic constraint that no
-    more than eight stocks can be invested in at a time, and no more than 20% of the portfolio can be in a single stock.
+    """ Objective Function, that aims to minimize the volatility. In this case, the volatility is simply the std dev.
+    For this problem, there is a realistic constraint that no more than eight stocks can be invested in at a time, 
+    and no more than 20% of the portfolio can be in a single stock.
     """
     _volatility_data = []
     
     def calc_fitness(self, vector):
-        """ Calculate the fitness, based on the return data. 
+        """ Calculate the fitness, based on the volatility data. 
         
         We can only select N number of stocks.
         Also, if any of the weights are above 20%, return the worst possible fitness.
@@ -26,36 +27,37 @@ class MinVolatility:
 
         weights = self.weights_for_vector(vector)
 
-        overall_return = 0.0
+        overall_volatility = 0.0
         for x in xrange(len(weights)):
             if weights[x] >= .2:
-                return 0
-            overall_return += self._volatility_data[x]*weights[x]
+                return 100
+            overall_volatility += self._volatility_data[x]*weights[x]
         
-        return overall_return
+        return overall_volatility
             
         
-    def __init__(self, csv_return_data):
-        f = open(csv_return_data, 'r')
+    def __init__(self, csv_volatility_data):
+        f = open(csv_volatility_data, 'r')
         
         f.readline()
         # Read the second line
         parts = f.readline().strip().split(',')
         for x in xrange(len(parts)):
             self._volatility_data.append(float(parts[x]))
+        f.close()
     
     def select_fittest(self, vector1, vector2):
-        """ Return the fittest of the two members and its score, by comparing which has the higher return 
+        """ Return the fittest of the two members and its score, by comparing which has the lower volatility
             
         return -- The vector, and the fitness value (the return)
         """
-        v1_return = self.calc_fitness(vector1)
-        v2_return = self.calc_fitness(vector2)
+        v1_volatility = self.calc_fitness(vector1)
+        v2_volatility = self.calc_fitness(vector2)
         
-        if v1_return > v2_return:
-            return vector1, v1_return
+        if v1_volatility < v2_volatility:
+            return vector1, v1_volatility
         else:
-            return vector2, v2_return
+            return vector2, v2_volatility
         
     def get_size(self):
         return len(self._volatility_data)
@@ -104,6 +106,6 @@ class MinVolatility:
         return weights
         
     def get_model(self, vector):
-        """ Returns a representative model of the vector - in this case, the weights that lead to an optimal return """
+        """ Returns a representative model of the vector - in this case, the weights that lead to a minimized volatility """
         return self.weights_for_vector(vector)
     

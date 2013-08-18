@@ -11,6 +11,7 @@ from selection_function.random_selector import rand_selector
 from objective_function.one_max import OneMax
 from objective_function.max_av_return import MaxAverageReturn
 from objective_function.min_volatility import MinVolatility
+from objective_function.max_ratio import MaxRatio
 
 DEF_POP_SIZE=-1
 DEF_CR_RATE=0.4
@@ -178,7 +179,7 @@ class DifferentialEvolver:
         
         Keyword arguments:
         num_dimensions -- the number of dimensions in each member of the population
-        max_gens -- the maximum number of generations to run (default '10000')
+        max_gens -- the maximum number of generations to run (default '1000')
         pop_size -- the number in the population (default '10 * num_dimensions')
         crossover_rate -- the chance of crossover (default '0.4')
         scaling_factor -- the scaling factor (default '0.4')
@@ -201,8 +202,9 @@ class DifferentialEvolver:
         
 if __name__ == '__main__':
 #     objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
-    objective_function = MinVolatility("../../data/volatility_2011.csv")
+#     objective_function = MinVolatility("../../data/volatility_2011.csv")
+    objective_function = MaxRatio("../../data/av_daily_returns_2011.csv", "../../data/volatility_2011.csv")
 #     objective_function = OneMax() 
     
-    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=1000)
+    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=300)
     evolver.start()
