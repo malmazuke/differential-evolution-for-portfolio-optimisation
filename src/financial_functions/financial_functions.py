@@ -239,23 +239,23 @@ if __name__ == '__main__':
     year = "2011"
     # Calculate the average daily return of each component
     calc_all_daily_returns(components, "../../data/av_daily_returns_2011.csv")
-    
+     
     # Calculate the volatility of each component
     calc_all_volatility(components, "../../data/volatility_2011.csv")
-    
+     
     # Calculate the alpha and beta values
     calc_all_alpha_beta(components, "../../data/alpha_2011.csv", "../../data/beta_2011.csv")
-    
+     
     year = "2012"
     # Do the 2012 data too
     components = read_data("../../data/dji.2012.csv")
-    
+     
     # Calculate the average daily return of each component
     calc_all_daily_returns(components, "../../data/av_daily_returns_2012.csv")
-    
+     
     # Calculate the volatility of each component
     calc_all_volatility(components, "../../data/volatility_2012.csv")
-    
+     
     # Calculate the alpha and beta values
     calc_all_alpha_beta(components, "../../data/alpha_2012.csv", "../../data/beta_2012.csv")
     
