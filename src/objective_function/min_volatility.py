@@ -10,8 +10,8 @@ from operator import itemgetter
 N_TOP_STOCKS = 8
 
 # class MaxAverageReturn(ObjectiveFunction):
-class MaxAverageReturn:
-    """ Objective Function, that aims to maximize the daily return. For this problem, there is a realistic constraint that no
+class MinVolatility:
+    """ Objective Function, that aims to minimize the volatility. For this problem, there is a realistic constraint that no
     more than eight stocks can be invested in at a time, and no more than 20% of the portfolio can be in a single stock.
     """
     _volatility_data = []
@@ -45,17 +45,17 @@ class MaxAverageReturn:
             self._volatility_data.append(float(parts[x]))
     
     def select_fittest(self, vector1, vector2):
-        """ Return the fittest of the two members and its score, by comparing which has the lower volatility
+        """ Return the fittest of the two members and its score, by comparing which has the higher return 
             
         return -- The vector, and the fitness value (the return)
         """
-        v1_vol = self.calc_fitness(vector1)
-        v2_vol = self.calc_fitness(vector2)
+        v1_return = self.calc_fitness(vector1)
+        v2_return = self.calc_fitness(vector2)
         
-        if v1_vol < v2_vol:
-            return vector1, v1_vol
+        if v1_return > v2_return:
+            return vector1, v1_return
         else:
-            return vector2, v2_vol
+            return vector2, v2_return
         
     def get_size(self):
         return len(self._volatility_data)

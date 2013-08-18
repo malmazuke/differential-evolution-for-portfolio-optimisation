@@ -10,6 +10,7 @@ import random
 from selection_function.random_selector import rand_selector
 from objective_function.one_max import OneMax
 from objective_function.max_av_return import MaxAverageReturn
+from objective_function.min_volatility import MinVolatility
 
 DEF_POP_SIZE=-1
 DEF_CR_RATE=0.4
@@ -167,7 +168,7 @@ class DifferentialEvolver:
         " crossover_rate: " + str(self._cr_rate)
         print "fitness,values"
         for x in xrange(self._pop_size):
-            print "return: " + str(self._scores[x] * 100) + "% vals: " + str(self._obj_function.get_model(self._population[x]))
+            print "fitness: " + str(self._scores[x] * 100) + "% vals: " + str(self._obj_function.get_model(self._population[x]))
 #             print str(self._scores[x]) + "," + str(self._population[x])
 #             print str(self._scores[x]) + "," + str(sum(self._population[x])) + "," + str(self._population[x])
 #             print str(self._scores[x]) + "," + str(sum(self._population[x]))
@@ -199,8 +200,9 @@ class DifferentialEvolver:
         self._scores = []
         
 if __name__ == '__main__':
-    objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
+#     objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
+    objective_function = MinVolatility("../../data/volatility_2011.csv")
 #     objective_function = OneMax() 
     
-    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=100)
+    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=1000)
     evolver.start()
