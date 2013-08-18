@@ -22,3 +22,8 @@ class ObjectiveFunction(object):
     @abstractmethod
     def get_model(self, vector):
         """ Return a representative model of the vector """
+    
+    @abstractmethod    
+    def find_best_model(self, scores):
+        """ Given the fitness scores, output the index of the best candidate """
+        

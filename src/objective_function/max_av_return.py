@@ -108,3 +108,16 @@ class MaxAverageReturn:
     def get_model(self, vector):
         """ Returns a representative model of the vector - in this case, the weights that lead to an optimal return """
         return self.weights_for_vector(vector)
+    
+    def find_best_model(self, scores):
+        """ Output the best candidate's index """
+        
+        best_index = 0
+        best_score = 0
+        for x in xrange(len(scores)):
+            if scores[x] > best_score:
+                best_index = x
+                best_score = scores[x]
+                
+        return best_index
+         

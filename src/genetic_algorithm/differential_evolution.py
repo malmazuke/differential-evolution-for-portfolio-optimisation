@@ -12,6 +12,7 @@ from objective_function.one_max import OneMax
 from objective_function.max_av_return import MaxAverageReturn
 from objective_function.min_volatility import MinVolatility
 from objective_function.max_ratio import MaxRatio
+import csv
 
 DEF_POP_SIZE=-1
 DEF_CR_RATE=0.4
@@ -164,16 +165,35 @@ class DifferentialEvolver:
         
         return out_vector
     
-    def print_results(self):
-#         print "For d:" + str(len(results)) + " pop_size: " + str(self._pop_size) + " max_gens:" + str(self._max_gens) + " scale_factor: " + str(self._scale_factor) + \
-#         " crossover_rate: " + str(self._cr_rate)
-#         print "fitness,values"
+    def print_results_formatted(self):
+        print "For d:" + str(len(self._population)) + " pop_size: " + str(self._pop_size) + " max_gens:" + str(self._max_gens) + " scale_factor: " + str(self._scale_factor) + \
+        " crossover_rate: " + str(self._cr_rate)
+        print "fitness, model"
         for x in xrange(len(self._population)):
             model = self._obj_function.get_model(self._population[x])
             print "fitness: " + str(self._scores[x]) + " model: " + str(model)
 #             print "fitness: " + str(self._scores[x]) + " sum: " + str(sum(model)) + " model: " + str(model)
 #             print str(self._scores[x]) + "," + str(self._population[x]) # Print the actual values in the DE (not very useful or meaningful)
+    
+    def output_fittest_model(self, csv_output=""):
+        """ Outputs the fittest model to a csv file """
+        f = None
+        if csv_output is not "":
+            f = open(csv_output, 'w')
         
+        best_index = self._obj_function.find_best_model(self._scores)
+        
+        # First value in the csv is the fitness score
+        out_string = str(self._scores[best_index])
+        model = self._obj_function.get_model(self._population[best_index]) 
+        for x in xrange(len(model)):
+            out_string += "," + str(model[x])
+        if f is not None:
+            f.write(out_string)
+            f.close()
+        
+        print out_string
+            
     def __init__(self, num_dimensions, max_gens=DEF_MAX_GENS, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
         """ Initialise the DE
         
@@ -201,12 +221,13 @@ class DifferentialEvolver:
         self._scores = []
         
 if __name__ == '__main__':
-#     objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
+    objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
 #     objective_function = MinVolatility("../../data/volatility_2011.csv")
-    objective_function = MaxRatio("../../data/av_daily_returns_2011.csv", "../../data/volatility_2011.csv")
+#     objective_function = MaxRatio("../../data/av_daily_returns_2011.csv", "../../data/volatility_2011.csv")
 #     objective_function = OneMax() 
     
-    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=500)
+    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=1000)
     evolver.start()
     
-    evolver.print_results()
+#     evolver.print_results_formatted()
+    evolver.output_fittest_model()
