@@ -108,4 +108,3 @@ class MaxAverageReturn:
     def get_model(self, vector):
         """ Returns a representative model of the vector - in this case, the weights that lead to an optimal return """
         return self.weights_for_vector(vector)
-    

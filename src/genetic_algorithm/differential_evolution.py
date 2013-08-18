@@ -170,8 +170,8 @@ class DifferentialEvolver:
 #         print "fitness,values"
         for x in xrange(len(self._population)):
             model = self._obj_function.get_model(self._population[x])
-#             print "fitness: " + str(self._scores[x]) + " model: " + str(model)
-            print "fitness: " + str(self._scores[x]) + " sum: " + str(sum(model)) + " model: " + str(model)
+            print "fitness: " + str(self._scores[x]) + " model: " + str(model)
+#             print "fitness: " + str(self._scores[x]) + " sum: " + str(sum(model)) + " model: " + str(model)
 #             print str(self._scores[x]) + "," + str(self._population[x]) # Print the actual values in the DE (not very useful or meaningful)
         
     def __init__(self, num_dimensions, max_gens=DEF_MAX_GENS, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
