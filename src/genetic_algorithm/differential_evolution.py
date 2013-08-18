@@ -170,6 +170,7 @@ class DifferentialEvolver:
         print "fitness,values"
         for x in xrange(self._pop_size):
             print "fitness: " + str(self._scores[x] * 100) + "% vals: " + str(self._obj_function.get_model(self._population[x]))
+#             print "fitness: " + str(self._scores[x] * 100) + "% sum: " + str(sum(self._obj_function.get_model(self._population[x])))# + "vals: " + str(self._obj_function.get_model(self._population[x]))
 #             print str(self._scores[x]) + "," + str(self._population[x])
 #             print str(self._scores[x]) + "," + str(sum(self._population[x])) + "," + str(self._population[x])
 #             print str(self._scores[x]) + "," + str(sum(self._population[x]))
@@ -206,5 +207,5 @@ if __name__ == '__main__':
 #     objective_function = MaxRatio("../../data/av_daily_returns_2011.csv", "../../data/volatility_2011.csv")
 #     objective_function = OneMax() 
     
-    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=1000)
+    evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=500)
     evolver.start()
