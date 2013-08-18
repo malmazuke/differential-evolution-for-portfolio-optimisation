@@ -81,22 +81,22 @@ class MinVolatility:
             weights.append(0.0)
         
         sorted_vals = sorted(sorted_vals,key=itemgetter(1))
-        sorted_vals = sorted_vals[:N_TOP_STOCKS]
+        sorted_vals = sorted_vals[:N_TOP_STOCKS + 1]
         
         # Get the max and min, so we can normalise the values
         max_value = sorted_vals[0][1]
         min_value = sorted_vals[len(sorted_vals) - 1][1]
-        
+         
         # Add the top N stock weights to the weights list, normalising as we go (although we still need to normalise so that they sum to 1)
-        for x in xrange(N_TOP_STOCKS):
+        for x in xrange(N_TOP_STOCKS + 1): # Plus one, so that the 'min_value' index is set to zero, allowing N_TOP_STOCKS to have weights greater than zero
             tup = sorted_vals[x]
             index = tup[0]
-            val = (tup[1] - min_value)/(max_value - min_value)
+            val = abs((tup[1] - min_value)/(max_value - min_value)) #abs, to get rid of -0.0 for 'N+1th' weight - small hack
             sorted_vals[x] = (index, val)
         
         sum_weights = sum([pair[1] for pair in sorted_vals])
         
-        for x in xrange(N_TOP_STOCKS):
+        for x in xrange(N_TOP_STOCKS + 1):
             # Now we divide by the sum of the weights, so that they add to 1
             tup = sorted_vals[x]
             index = tup[0]
