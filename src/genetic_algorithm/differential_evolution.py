@@ -169,11 +169,10 @@ class DifferentialEvolver:
 #         " crossover_rate: " + str(self._cr_rate)
 #         print "fitness,values"
         for x in xrange(len(self._population)):
-            print "fitness: " + str(self._scores[x]) + " vals: " + str(self._obj_function.get_model(self._population[x]))
-#             print "fitness: " + str(self._scores[x] * 100) + "% sum: " + str(sum(self._obj_function.get_model(self._population[x])))# + "vals: " + str(self._obj_function.get_model(self._population[x]))
-#             print str(self._scores[x]) + "," + str(self._population[x])
-#             print str(self._scores[x]) + "," + str(sum(self._population[x])) + "," + str(self._population[x])
-#             print str(self._scores[x]) + "," + str(sum(self._population[x]))
+            model = self._obj_function.get_model(self._population[x])
+#             print "fitness: " + str(self._scores[x]) + " model: " + str(model)
+            print "fitness: " + str(self._scores[x]) + " sum: " + str(sum(model)) + " model: " + str(model)
+#             print str(self._scores[x]) + "," + str(self._population[x]) # Print the actual values in the DE (not very useful or meaningful)
         
     def __init__(self, num_dimensions, max_gens=DEF_MAX_GENS, pop_size=DEF_POP_SIZE, crossover_rate=DEF_CR_RATE, scaling_factor=DEF_SCALE_FACTOR, selector=DEF_SELECTOR, num_diff_vectors=DEF_NUM_DIFF_VECTORS, crossover_scheme=DEF_CR_SCHEME, obj_function=DEF_OBJ_FUNCT):
         """ Initialise the DE
