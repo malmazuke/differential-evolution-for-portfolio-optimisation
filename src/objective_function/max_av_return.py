@@ -120,4 +120,3 @@ class MaxAverageReturn:
                 best_score = scores[x]
                 
         return best_index
-         

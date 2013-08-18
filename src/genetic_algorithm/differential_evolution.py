@@ -12,7 +12,6 @@ from objective_function.one_max import OneMax
 from objective_function.max_av_return import MaxAverageReturn
 from objective_function.min_volatility import MinVolatility
 from objective_function.max_ratio import MaxRatio
-import csv
 
 DEF_POP_SIZE=-1
 DEF_CR_RATE=0.4
@@ -23,7 +22,7 @@ DEF_CR_SCHEME="bin"
 DEF_OBJ_FUNCT=OneMax()
 DEF_MAX_GENS=1000
 
-
+        ### Helper methods ###
 def add_vectors(vector1, vector2):
     """ Utility function to add two vectors. Assumes that vectors are same length"""
     out_vector = []
@@ -31,7 +30,6 @@ def add_vectors(vector1, vector2):
         out_vector.append(vector1[x] + vector2[x])
     
     return out_vector
-    
     
 def subtract_vectors(vector1, vector2):
     """ Utility function to subtract two vectors. Assumes that vectors are same length """
@@ -49,7 +47,12 @@ def multiply_vector(vector, scalar):
         
     return out_vector
 
+
 class DifferentialEvolver:
+    """ The Differential Evolution class - this class applies differential evolution to a population in order to optimise
+    a population set based on a specified Objective Function
+    """
+    
     _population = []
     _num_dimensions = 0
     _pop_size = DEF_POP_SIZE
@@ -105,11 +108,6 @@ class DifferentialEvolver:
                 fittest, fitness = self._obj_function.select_fittest(self._population[i], offspring[i])
                 self._population[i] = fittest
                 self._scores[i] = fitness
-#                 fitness_parent = self.calc_fitness(self._population[i])
-#                 fitness_offspring = self.calc_fitness(offspring[i])
-#                 if fitness_offspring < fitness_parent:
-#                     self._scores[i] = fitness_offspring
-#                     self._population[i] = offspring[i]
             
             # Until a stop condition is satisfied.
             curr_gen += 1
@@ -172,8 +170,6 @@ class DifferentialEvolver:
         for x in xrange(len(self._population)):
             model = self._obj_function.get_model(self._population[x])
             print "fitness: " + str(self._scores[x]) + " model: " + str(model)
-#             print "fitness: " + str(self._scores[x]) + " sum: " + str(sum(model)) + " model: " + str(model)
-#             print str(self._scores[x]) + "," + str(self._population[x]) # Print the actual values in the DE (not very useful or meaningful)
     
     def output_fittest_model(self, csv_output=""):
         """ Outputs the fittest model to a csv file """
@@ -221,13 +217,14 @@ class DifferentialEvolver:
         self._scores = []
         
 if __name__ == '__main__':
-#     objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
+    objective_function = MaxAverageReturn("../../data/av_daily_returns_2011.csv")
 #     objective_function = MinVolatility("../../data/volatility_2011.csv")
-    objective_function = MaxRatio("../../data/av_daily_returns_2011.csv", "../../data/volatility_2011.csv")
+#     objective_function = MaxRatio("../../data/av_daily_returns_2011.csv", "../../data/volatility_2011.csv")
 #     objective_function = OneMax() 
     
     evolver = DifferentialEvolver(30, num_diff_vectors=1, obj_function=objective_function, max_gens=1000)
     evolver.start()
     
 #     evolver.print_results_formatted()
-    evolver.output_fittest_model("../../data/fittest_ratio_2011.csv")
+#     evolver.output_fittest_model()
+    evolver.output_fittest_model("../../data/fittest_av_daily_returns_2011.csv")
