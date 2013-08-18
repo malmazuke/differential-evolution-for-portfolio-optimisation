@@ -230,4 +230,4 @@ if __name__ == '__main__':
     evolver.start()
     
 #     evolver.print_results_formatted()
-    evolver.output_fittest_model()
+    evolver.output_fittest_model("../../data/fittest_av_daily_returns_2011.csv")
